@@ -20,7 +20,7 @@ echo head($head);
     <?php echo $this->harvestForm; ?>
     <br/>
     <div id="harvests">
-    <h2><?php __('Harvests'); ?></h2>
+    <h2><?php echo __('Harvests'); ?></h2>
     <?php if (empty($this->harvests)): ?>
     <p><?php echo __('There are no harvests.'); ?></p>
     <?php else: ?>

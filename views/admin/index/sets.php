@@ -7,6 +7,7 @@
  * @copyright Copyright (c) 2009-2011 Roy Rosenzweig Center for History and New Media
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  */
+
 queue_css_string('.field select {width: auto;}');
 $head = array(
     'title' => __('OAI-PMH Harvester | Harvest'),
@@ -18,8 +19,8 @@ echo head($head);
     <?php echo flash(); ?>
     <?php if (empty($this->availableMaps)): ?>
     <div class="error"><?php
-        echo __('There are no available data maps that are compatible with this repository.');
-        echo ' ' . __('You will not be able to harvest from this repository.');
+        echo __('There are no available data maps that are compatible with this repository.'
+            ' ' . 'You will not be able to harvest from this repository.');
     ?></div>
     <?php endif; ?>
     <h2><?php echo __('Data provider: %s', html_escape($this->baseUrl)); ?></h2>

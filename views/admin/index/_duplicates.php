@@ -4,11 +4,11 @@
     <?php foreach ($items as $item): ?>
         <li>
         <?php echo link_to_item(
-    __('Item #%s', $item->id),
-    array(),
-    'show',
-    $item
-            ); ?>
+            __('Item #%s', $item->id),
+            array(),
+            'show',
+            $item
+        ); ?>
         </li>
         <?php release_object($item); ?>
     <?php endforeach; ?>
