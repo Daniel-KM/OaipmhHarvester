@@ -179,6 +179,7 @@ class OaipmhHarvester_Request
         $client->setConfig(
             array(
                 'useragent' => $this->_getUserAgent(),
+                'timeout'      => 20
             )
         );
         $client->setParameterGet($query);
