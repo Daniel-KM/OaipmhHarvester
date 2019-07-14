@@ -152,7 +152,7 @@ Copyright
 ---------
 
 * Copyright 2008-2013 Roy Rosenzweig Center for History and New Media
-* Copyright Daniel Berthereau, 2015 (see [Daniel-KM])
+* Copyright Daniel Berthereau, 2015-2019 (see [Daniel-KM])
 
 
 [Omeka]: https://omeka.org
