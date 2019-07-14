@@ -96,7 +96,7 @@ class OaipmhHarvesterPlugin extends Omeka_Plugin_AbstractPlugin
           `update_metadata` enum('element', 'keep', 'strict') NOT NULL,
           `update_files` enum('full', 'keep', 'deduplicate', 'remove') NOT NULL,
           `status` enum('queued','in progress','completed','error','deleted','killed') NOT NULL,
-          `status_messages` text,
+          `status_messages` longtext,
           `resumption_token` text,
           `initiated` datetime default NULL,
           `completed` datetime default NULL,
@@ -165,6 +165,14 @@ SQL;
             $sql = "
                 ALTER TABLE `{$db->prefix}oaipmh_harvester_harvests`
                 ADD `update_metadata` enum('element', 'keep', 'strict') NOT NULL AFTER `set_description`
+            ";
+            $db->query($sql);
+        }
+
+        if (version_compare($oldVersion, '2.2.1', '<')) {
+            $sql = "
+                ALTER TABLE `{$db->prefix}oaipmh_harvester_harvests`
+                MODIFY `status_messages` longtext
             ";
             $db->query($sql);
         }
