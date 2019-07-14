@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2009-2011 Roy Rosenzweig Center for History and New Media
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  */
-
 $head = array(
     'title' => __('OAI-PMH Harvester | Status'),
     'body_class' => 'oaipmh-harvester content',
@@ -17,9 +16,11 @@ echo head($head);
 <?php echo flash(); ?>
 <?php if (empty($this->harvest)): ?>
 <p><?php echo __('This harvest does not exist.'); ?></p>
-<p><?php echo __('Go back to the %slist of harvests%s.',
+<p><?php echo __(
+    'Go back to the %slist of harvests%s.',
     '<a href="' . url('/oaipmh-harvester') . '">',
-    '</a>'); ?></p>
+    '</a>'
+); ?></p>
 <?php else: ?>
 <table>
     <tr>

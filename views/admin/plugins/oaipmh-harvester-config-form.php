@@ -11,8 +11,11 @@
                     echo '<ul>';
                     foreach ($userRoles as $role => $label) {
                         echo '<li>';
-                        echo $this->formCheckbox('oaipmh_harvester_allow_roles[]', $role,
-                            array('checked' => in_array($role, $currentRoles) ? 'checked' : ''));
+                        echo $this->formCheckbox(
+                            'oaipmh_harvester_allow_roles[]',
+                            $role,
+                            array('checked' => in_array($role, $currentRoles) ? 'checked' : '')
+                        );
                         echo $label;
                         echo '</li>';
                     }

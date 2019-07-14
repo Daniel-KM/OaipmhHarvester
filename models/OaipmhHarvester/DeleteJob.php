@@ -13,7 +13,7 @@ class OaipmhHarvester_DeleteJob extends Omeka_Job_AbstractJob
         if (isset($config->plugins->OaipmhHarvester->memoryLimit)) {
             ini_set('memory_limit', $config->plugins->OaipmhHarvester->memoryLimit);
         }
-        
+
         // Set the set.
         $harvest = $this->_db
             ->getTable('OaipmhHarvester_Harvest')
@@ -37,7 +37,7 @@ class OaipmhHarvester_DeleteJob extends Omeka_Job_AbstractJob
         $records = $this->_db
             ->getTable('OaipmhHarvester_Record')
             ->findByHarvestId($harvest->id);
-        
+
         // Delete items if they exist.
         foreach ($records as $record) {
             if ($record->item_id) {
@@ -50,7 +50,7 @@ class OaipmhHarvester_DeleteJob extends Omeka_Job_AbstractJob
                 $record->delete();
             }
         }
-        
+
         // Delete collection if exists.
         if ($harvest->collection_id) {
             $collection = $this->_db
@@ -62,15 +62,17 @@ class OaipmhHarvester_DeleteJob extends Omeka_Job_AbstractJob
             }
             $harvest->collection_id = null;
         }
-        
+
         $harvest->status = OaipmhHarvester_Harvest::STATUS_DELETED;
-        $statusMessage = __('All items created for this harvest were deleted on %s',
-                            date('Y-m-d H:i:s'));
-        $harvest->status_messages = strlen($harvest->status_messages) == 0 
-                                  ? $statusMessage 
+        $statusMessage = __(
+            'All items created for this harvest were deleted on %s',
+            date('Y-m-d H:i:s')
+        );
+        $harvest->status_messages = strlen($harvest->status_messages) == 0
+                                  ? $statusMessage
                                   : "\n\n" . $statusMessage;
-        // Reset the harvest start_from time if an error occurs during 
-        // processing. Since there's no way to know exactly when the 
+        // Reset the harvest start_from time if an error occurs during
+        // processing. Since there's no way to know exactly when the
         // error occured, re-harvests need to start from the beginning.
         $harvest->start_from = null;
         $harvest->save();

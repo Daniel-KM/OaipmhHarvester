@@ -27,7 +27,7 @@ class Table_OaipmhHarvester_Record extends Omeka_Db_Table
         $select->where("$tableAlias.harvest_id = ?");
         return $this->fetchObjects($select, array($harvestId));
     }
-    
+
     /**
      * Return records by OAI-PMH identifier.
      * 
@@ -41,7 +41,7 @@ class Table_OaipmhHarvester_Record extends Omeka_Db_Table
         $select->where("$tableAlias.identifier = ?");
         return $this->fetchObjects($select, array($identifier));
     }
-    
+
     /**
      * Return records by item ID.
      * 
@@ -77,8 +77,7 @@ class Table_OaipmhHarvester_Record extends Omeka_Db_Table
                 }
             }
         }
-        if (array_key_exists('identifier', $params))
-        {
+        if (array_key_exists('identifier', $params)) {
             $select->where("$tableAlias.identifier = ?", $params['identifier']);
         }
     }

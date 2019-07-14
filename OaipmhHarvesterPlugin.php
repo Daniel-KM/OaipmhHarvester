@@ -7,12 +7,11 @@
 * @package OaipmhHarvester
 */
 
-
 /** Path to plugin directory */
 defined('OAIPMH_HARVESTER_PLUGIN_DIRECTORY')
     or define('OAIPMH_HARVESTER_PLUGIN_DIRECTORY', dirname(__FILE__));
 
-/** Path to plugin maps directory */
+/* Path to plugin maps directory */
 defined('OAIPMH_HARVESTER_MAPS_DIRECTORY')
     or define('OAIPMH_HARVESTER_MAPS_DIRECTORY', OAIPMH_HARVESTER_PLUGIN_DIRECTORY
                                         . '/models/OaipmhHarvester/Harvest');
@@ -24,7 +23,6 @@ require_once dirname(__FILE__) . '/functions.php';
  */
 class OaipmhHarvesterPlugin extends Omeka_Plugin_AbstractPlugin
 {
-
     /**
      * @var array Hooks for the plugin.
      */
@@ -220,13 +218,12 @@ SQL;
             if (in_array($optionKey, array(
                     'oaipmh_harvester_allow_roles',
                 ))) {
-               $post[$optionKey] = serialize($post[$optionKey]) ?: serialize(array());
+                $post[$optionKey] = serialize($post[$optionKey]) ?: serialize(array());
             }
             if (isset($post[$optionKey])) {
                 set_option($optionKey, $post[$optionKey]);
             }
         }
-
     }
 
     /**
@@ -261,13 +258,13 @@ SQL;
         if ($denyRoles) {
             $acl->deny($denyRoles, $resource);
         }
-  }
+    }
 
     /**
-    * Appended to admin item show pages.
-    *
-    * @param array $args
-    */
+     * Appended to admin item show pages.
+     *
+     * @param array $args
+     */
     public function hookAdminItemsShowSidebar($args)
     {
         $item = $args['item'];

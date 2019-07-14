@@ -11,7 +11,7 @@ class OaipmhHarvester_Request_Throttler
      * @var array
      */
     private $_options = array();
-    
+
     /**
      * @var OaipmhHarvester_Request
      */
@@ -52,7 +52,7 @@ class OaipmhHarvester_Request_Throttler
             );
         }
         $this->_storeRequestTime($m);
-        return call_user_func_array(array($this->_request, $m), $a);                
+        return call_user_func_array(array($this->_request, $m), $a);
     }
 
     /**
@@ -60,7 +60,7 @@ class OaipmhHarvester_Request_Throttler
      * required number of seconds has passed since the last request.
      *
      * @param string $m Method name indicating the type of request made.
-     * @param integer $waitSecs Number of seconds that must pass before another
+     * @param int $waitSecs Number of seconds that must pass before another
      * request can be made.
      */
     private function _requestExceedsThreshold($m, $waitSecs)
@@ -68,7 +68,7 @@ class OaipmhHarvester_Request_Throttler
         if (!array_key_exists($m, $this->_session->requests)) {
             return false;
         }
-        $lastRequest = $this->_session->requests[$m];        
+        $lastRequest = $this->_session->requests[$m];
         if (!$lastRequest) {
             return false;
         }

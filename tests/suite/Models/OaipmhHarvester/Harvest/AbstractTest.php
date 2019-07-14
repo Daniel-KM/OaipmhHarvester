@@ -23,7 +23,7 @@ class OaipmhHarvester_Harvest_AbstractTest extends OaipmhHarvester_Test_AppTestC
         $harvester->harvest();
         $this->assertTrue($harvest->exists());
         $this->assertEquals(
-            OaipmhHarvester_Harvest::STATUS_COMPLETED, 
+            OaipmhHarvester_Harvest::STATUS_COMPLETED,
             $harvest->status
         );
         $this->assertEquals(

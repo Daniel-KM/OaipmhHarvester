@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2009-2011 Roy Rosenzweig Center for History and New Media
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  */
-
 queue_css_string('.field select {width: auto;}');
 $head = array(
     'title' => __('OAI-PMH Harvester | Harvest'),

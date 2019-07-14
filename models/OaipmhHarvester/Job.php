@@ -18,10 +18,11 @@ class OaipmhHarvester_Job extends Omeka_Job_AbstractJob
                              ->find($this->_harvestId);
         if (!$harvest) {
             throw new UnexpectedValueException(
-                "Harvest with id = '$this->_harvestId' does not exist.");
+                "Harvest with id = '$this->_harvestId' does not exist."
+            );
         }
 
-        // Resent jobs can remain queued after all the items themselves have 
+        // Resent jobs can remain queued after all the items themselves have
         // been deleted. Skip if that's the case.
         if ($harvest->status == OaipmhHarvester_Harvest::STATUS_DELETED) {
             _log("Queued harvest with ID = {$harvest->id} was deleted prior "
@@ -35,8 +36,7 @@ class OaipmhHarvester_Job extends Omeka_Job_AbstractJob
         // Don't use resend(), because it will nest process.
         do {
             $harvester->harvest();
-        }
-        while ($harvest->isResumable()
+        } while ($harvest->isResumable()
             && !($harvest->isError() || $harvest->isKilled()));
     }
 

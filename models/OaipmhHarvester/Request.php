@@ -22,7 +22,7 @@ class OaipmhHarvester_Request
      *
      * @param string $baseUrl
      */
-    public function __construct($baseUrl = null) 
+    public function __construct($baseUrl = null)
     {
         if ($baseUrl) {
             $this->setBaseUrl($baseUrl);
@@ -53,11 +53,11 @@ class OaipmhHarvester_Request
         }
 
         foreach ($xml->ListMetadataFormats->metadataFormat as $format) {
-            $prefix = trim((string)$format->metadataPrefix);
-            $schema = trim((string)$format->schema);
+            $prefix = trim((string) $format->metadataPrefix);
+            $schema = trim((string) $format->schema);
             $formats[$prefix] = $schema;
         }
-        /**
+        /*
          * It's important to consider that some repositories don't provide 
          * repository
          *  -wide metadata formats. Instead they only provide record level metadata 
@@ -93,7 +93,7 @@ class OaipmhHarvester_Request
         }
         $token = $xml->ListRecords->resumptionToken;
         if ($token) {
-            $response['resumptionToken'] = (string)$token;
+            $response['resumptionToken'] = (string) $token;
         }
         return $response;
     }
@@ -118,15 +118,15 @@ class OaipmhHarvester_Request
         $sets = array();
         try {
             $xml = $this->_makeRequest($query);
-        
-            // Handle returned errors, such as "noSetHierarchy". For a data 
-            // provider that has no set hierarchy, see: 
+
+            // Handle returned errors, such as "noSetHierarchy". For a data
+            // provider that has no set hierarchy, see:
             // http://solarphysics.livingreviews.org/register/oai
             $error = $this->_getError($xml);
             if ($error) {
                 $retVal['error'] = $error;
                 if ($error['code'] ==
-                        OaipmhHarvester_Request::OAI_ERR_NO_SET_HIERARCHY
+                        self::OAI_ERR_NO_SET_HIERARCHY
                 ) {
                     $sets = array();
                 }
@@ -136,7 +136,7 @@ class OaipmhHarvester_Request
             if (isset($xml->ListSets->resumptionToken)) {
                 $retVal['resumptionToken'] = $xml->ListSets->resumptionToken;
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             // If we're here, the provider didn't even respond with valid XML.
             // Try to continue with no sets.
             $sets = array();
@@ -158,7 +158,7 @@ class OaipmhHarvester_Request
     {
         if ($client === null) {
             $client = new Omeka_Http_Client();
-        }        
+        }
         $this->_client = $client;
     }
 
@@ -166,7 +166,7 @@ class OaipmhHarvester_Request
     {
         $error = array();
         if ($xml->error) {
-            $error['message'] = (string)$xml->error;   
+            $error['message'] = (string) $xml->error;
             $error['code'] = $xml->error->attributes()->code;
         }
         return $error;
@@ -190,21 +190,26 @@ class OaipmhHarvester_Request
                 $ns = $iter->getNamespaces();
                 $ns_key = array_search("http://www.openarchives.org/OAI/2.0/", $ns);
                 if ($ns_key !== false and $ns_key !== "") {
-                    $iter = simplexml_load_string($response->getBody(),
-                            "SimpleXMLElement", 0, $ns_key, true);
+                    $iter = simplexml_load_string(
+                        $response->getBody(),
+                        "SimpleXMLElement",
+                        0,
+                        $ns_key,
+                        true
+                    );
                 }
             }
             if ($iter === false) {
                 $errors = array();
-                foreach(libxml_get_errors() as $error) {
-                    $errors[] = trim($error->message) . ' on line ' 
-                              . $error->line . ', column ' 
+                foreach (libxml_get_errors() as $error) {
+                    $errors[] = trim($error->message) . ' on line '
+                              . $error->line . ', column '
                               . $error->column;
                 }
                 libxml_clear_errors();
                 libxml_use_internal_errors(false);
                 _log(
-                    "[OaipmhHarvester] Could not parse XML: " 
+                    "[OaipmhHarvester] Could not parse XML: "
                     . $response->getBody()
                 );
                 $errStr = join("\n", $errors);

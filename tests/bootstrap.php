@@ -6,8 +6,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
  * @package OaipmhHarvester
  */
-
-define('OAIPMHHARVESTER_BASE', realpath(dirname(__FILE__) . '/../')); 
+define('OAIPMHHARVESTER_BASE', realpath(dirname(__FILE__) . '/../'));
 set_include_path(get_include_path() . PATH_SEPARATOR . OAIPMHHARVESTER_BASE);
 
 define('OAIPMH_HARVESTER_DIR', dirname(dirname(__FILE__)));

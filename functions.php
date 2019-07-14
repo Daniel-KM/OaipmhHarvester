@@ -5,7 +5,7 @@ function oaipmh_harvester_config($key, $default = null)
     $config = Zend_Registry::get('bootstrap')->getResource('Config');
     if (isset($config->plugins->OaipmhHarvester->$key)) {
         return $config->plugins->OaipmhHarvester->$key;
-    } else if ($default) {
+    } elseif ($default) {
         return $default;
     } else {
         return null;
@@ -34,7 +34,7 @@ function oaipmh_harvester_get_maps()
                 && $match[1] != 'Abstract'
             ) {
                 // Get and set only the name of the file minus the extension.
-                require_once($pathname);
+                require_once $pathname;
                 $class = "OaipmhHarvester_Harvest_${match[1]}";
                 $metadataSchema = constant("$class::METADATA_SCHEMA");
                 $metadataPrefix = constant("$class::METADATA_PREFIX");

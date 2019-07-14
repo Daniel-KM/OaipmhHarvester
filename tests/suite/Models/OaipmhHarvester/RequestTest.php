@@ -24,21 +24,21 @@ class OaipmhHarvester_RequestTest extends PHPUnit_Framework_TestCase
             $this->fail();
         } catch (Zend_Http_Client_Exception $e) {
             $this->assertContains(
-                "error parsing attribute name", 
+                "error parsing attribute name",
                 $e->getMessage()
             );
         }
-    }  
+    }
 
     public function testListMetadataFormats()
     {
         $this->_setXml(file_get_contents(
             dirname(__FILE__) . '/_files/ListMetadataFormats.xml'
-        ));        
+        ));
         $this->request->setBaseUrl('http://www.example.com');
         $formats = $this->request->listMetadataFormats();
         $this->assertEquals(
-            array (
+            array(
               "oai_dc" => "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
               "uketd_dc" => "http://naca.central.cranfield.ac.uk/ethos-oai/2.0/uketd_dc.xsd",
               "didl" => "http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-21_schema_files/did/didmodel.xsd",
@@ -51,20 +51,24 @@ class OaipmhHarvester_RequestTest extends PHPUnit_Framework_TestCase
     {
         $this->_setXml(file_get_contents(
             dirname(__FILE__) . '/_files/ListRecords.xml'
-        ));    
+        ));
         $this->request->setBaseUrl('http://www.example.com');
         $resp = $this->request->listRecords();
-        $this->assertTrue(array_key_exists('records', $resp), 
-            "Records must be available in the response.");
-        $this->assertTrue(array_key_exists('resumptionToken', $resp),
-            "Resumption token should be available in the response.");
+        $this->assertTrue(
+            array_key_exists('records', $resp),
+            "Records must be available in the response."
+        );
+        $this->assertTrue(
+            array_key_exists('resumptionToken', $resp),
+            "Resumption token should be available in the response."
+        );
     }
 
     public function testListSets()
     {
         $this->_setXml(file_get_contents(
             dirname(__FILE__) . '/_files/ListSets.xml'
-        ));    
+        ));
         $this->request->setBaseUrl('http://www.example.com');
         $resp = $this->request->listSets();
         $this->assertEquals(4, count($resp['sets']));
@@ -72,6 +76,6 @@ class OaipmhHarvester_RequestTest extends PHPUnit_Framework_TestCase
 
     private function _setXml($str)
     {
-        $this->client->getAdapter()->setResponse($this->_okHeader . $str);        
+        $this->client->getAdapter()->setResponse($this->_okHeader . $str);
     }
 }

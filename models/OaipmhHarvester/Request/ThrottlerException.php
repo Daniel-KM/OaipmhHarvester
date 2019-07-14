@@ -6,4 +6,5 @@
  * @package OaipmhHarvester
  */
 class OaipmhHarvester_Request_ThrottlerException extends Exception
-{}
+{
+}

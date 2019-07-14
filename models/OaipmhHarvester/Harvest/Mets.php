@@ -12,7 +12,6 @@
  * @package OaipmhHarvester
  * @subpackage Models
  */
-
 class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
 {
     /*Xml schema and OAI prefix for the format represented by this class
@@ -29,28 +28,28 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
 
     /** XML namespace for unqualified Dublin Core */
     const DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/';
-    
+
     const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
-    
+
     protected $_collection;
-    
-     protected function _beforeHarvest()
+
+    protected function _beforeHarvest()
     {
         $harvest = $this->_getHarvest();
-   
+
         $collectionMetadata = array(
             'metadata' => array(
                 'public' => $this->getOption('public'),
                 'featured' => $this->getOption('featured'),
         ));
         $collectionMetadata['elementTexts']['Dublin Core']['Title'][]
-            = array('text' => (string) $harvest->set_name, 'html' => false); 
+            = array('text' => (string) $harvest->set_name, 'html' => false);
         $collectionMetadata['elementTexts']['Dublin Core']['Description'][]
-            = array('text' => (string) $harvest->set_Description, 'html' => false); 
-        
+            = array('text' => (string) $harvest->set_Description, 'html' => false);
+
         $this->_collection = $this->_insertCollection($collectionMetadata);
     }
-    
+
     /**
      * Harvest one record.
      *
@@ -61,8 +60,8 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
     {
         $itemMetadata = array(
             'collection_id' => isset($this->_collection->id) ? $this->_collection->id : 0,
-            'public'        => $this->getOption('public'),
-            'featured'      => $this->getOption('featured'),
+            'public' => $this->getOption('public'),
+            'featured' => $this->getOption('featured'),
         );
 
         $map = $this->_getMap($record);
@@ -78,7 +77,7 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
         $recordMetadata = $record->metadata;
         $recordMetadata->registerXpathNamespace('mets', self::METS_NAMESPACE);
         $files = $recordMetadata->xpath('mets:mets/mets:fileSec/mets:fileGrp/mets:file');
-        foreach($files as $fl){
+        foreach ($files as $fl) {
             $fileAttributes = $fl->attributes();
             $file = $fl->FLocat->attributes(self::XLINK_NAMESPACE);
 
@@ -106,12 +105,12 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
                 'metadata' => $dmdId ? $dmdSections[$dmdId] : array(),
             );
         }
-        
+
         return array('itemMetadata' => $itemMetadata,
                      'elementTexts' => $elementTexts,
                      'fileMetadata' => $fileMetadata);
     }
-    
+
     /**
      * Convenience function that returns the xml structMap as an array of items
      * and the files associated with it.
@@ -128,17 +127,17 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
                 ->mets
                 ->structMap
                 ->div;
-        
+
         $map = null;
-        if(isset($structMap['DMDID'])){
-            $map['itemId'] = (string)$structMap['DMDID'];
-            
+        if (isset($structMap['DMDID'])) {
+            $map['itemId'] = (string) $structMap['DMDID'];
+
             $fileCount = count($structMap->fptr);
-            
+
             $map['files'] = null;
-            if($fileCount != 0){
-                foreach($structMap->fptr as $fileId){
-                    $map['files'][] = (string)$fileId['FILEID'];
+            if ($fileCount != 0) {
+                foreach ($structMap->fptr as $fileId) {
+                    $map['files'][] = (string) $fileId['FILEID'];
                 }
             }
         }
@@ -153,12 +152,12 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
      * @internal Here, only Dublin Core is managed.
      *
      * @param type $record
-     * @param boolean $isEmpty
+     * @param bool $isEmpty
      * @return boolean/array
      */
     private function _dmdSecToArray($record, $isEmpty)
     {
-        $mets= $record->metadata->mets->children(self::METS_NAMESPACE);
+        $mets = $record->metadata->mets->children(self::METS_NAMESPACE);
         $meta = null;
         $elements = array(
             'title' => 'Title',
@@ -178,7 +177,7 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
             'rights' => 'Rights',
         );
 
-        foreach($mets->dmdSec as $k){
+        foreach ($mets->dmdSec as $k) {
             // TODO Currently, mdRef is not managed.
             if (empty($k->mdWrap)) {
                 continue;
@@ -205,11 +204,11 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
             $elementTexts = array();
 
             foreach ($elements as $element => $label) {
-                if(isset($dcMetadata->$element)){
-                    foreach($dcMetadata->$element as $rawText){
-                         $text = trim($rawText);
-                         $elementTexts['Dublin Core'][$label][]
-                             = array('text'=> (string) $text, 'html' => $this->_isXml($text));
+                if (isset($dcMetadata->$element)) {
+                    foreach ($dcMetadata->$element as $rawText) {
+                        $text = trim($rawText);
+                        $elementTexts['Dublin Core'][$label][]
+                             = array('text' => (string) $text, 'html' => $this->_isXml($text));
                     }
                 }
             }
@@ -220,7 +219,7 @@ class OaipmhHarvester_Harvest_Mets extends OaipmhHarvester_Harvest_Abstract
                 $meta[(string) $dmdAttributes['ID']] = $elementTexts;
             }
         }
-        
+
         return $meta;
     }
 }

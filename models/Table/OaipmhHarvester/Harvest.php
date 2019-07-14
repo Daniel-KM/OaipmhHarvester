@@ -41,11 +41,12 @@ class Table_OaipmhHarvester_Harvest extends Omeka_Db_Table
         $tableAlias = $this->getTableAlias();
         $select = $this->getSelect()->where("$tableAlias.base_url = ?", $baseUrl)
                                     ->where("$tableAlias.metadata_prefix = ?", $metadataPrefix);
-        if ($setSpec) 
+        if ($setSpec) {
             $select->where("$tableAlias.set_spec = ?", $setSpec);
-        else
+        } else {
             $select->where("$tableAlias.set_spec IS NULL");
-                
+        }
+
         return $this->fetchObject($select);
     }
 }

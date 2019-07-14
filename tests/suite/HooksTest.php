@@ -5,7 +5,7 @@ class OaipmhHarvester_HooksTest extends OaipmhHarvester_Test_AppTestCase
 
     public function setUp()
     {
-        parent::setUp();        
+        parent::setUp();
         $this->dbHelper = new Omeka_Test_Helper_Db($this->db->getAdapter(), $this->db->prefix);
     }
 
@@ -77,7 +77,7 @@ class OaipmhHarvester_HooksTest extends OaipmhHarvester_Test_AppTestCase
         release_object($item);
         release_object($record);
         $this->assertEquals(
-            0, 
+            0,
             $table->count()
         );
     }
@@ -104,7 +104,7 @@ class OaipmhHarvester_HooksTest extends OaipmhHarvester_Test_AppTestCase
         $this->dispatch('/items/show/' . $orig->id);
         $this->assertQuery('div#harvester-duplicates');
         $this->assertQueryCount(
-            'div#harvester-duplicates li', 
+            'div#harvester-duplicates li',
             2,
             "Should be 2 duplicates of this item."
         );

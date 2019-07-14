@@ -28,19 +28,19 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * Error message code, used for status messages.
      */
     const MESSAGE_CODE_ERROR = 2;
-    
+
     /**
      * Date format for OAI-PMH requests.
      * Only use day-level granularity for maximum compatibility with
      * repositories.
      */
     const OAI_DATE_FORMAT = 'Y-m-d';
-    
+
     /**
      * @var OaipmhHarvester_Harvest The OaipmhHarvester_Harvest object model.
      */
     private $_harvest;
-    
+
     /**
      * @var SimpleXMLIterator The current, cached SimpleXMLIterator record object.
      */
@@ -58,16 +58,14 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * 
      * @param OaipmhHarvester_Harvest $harvest The OaipmhHarvester_Harvest object 
      * model
-     * @return void
      */
     public function __construct($harvest)
-    {   
-        // Set an error handler method to record run-time warnings (non-fatal 
+    {
+        // Set an error handler method to record run-time warnings (non-fatal
         // errors).
         set_error_handler(array($this, 'errorHandler'), E_WARNING);
-        
+
         $this->_harvest = $harvest;
-   
     }
 
     public function setOption($key, $value)
@@ -79,7 +77,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
     {
         return $this->_options[$key];
     }
-    
+
     /**
      * Abstract method that all class extentions must contain.
      * 
@@ -126,9 +124,9 @@ abstract class OaipmhHarvester_Harvest_Abstract
      *      if it exists, or false otherwise.
      */
     private function _recordExists($xml)
-    {   
-        $identifier = trim((string)$xml->header->identifier);
-        
+    {
+        $identifier = trim((string) $xml->header->identifier);
+
         /* Ideally, the OAI identifier would be globally-unique, but for
            poorly configured servers that might not be the case.  However,
            the identifier is always unique for that repository, so given
@@ -140,12 +138,12 @@ abstract class OaipmhHarvester_Harvest_Abstract
                 'base_url' => $this->_harvest->base_url,
                 'set_spec' => $this->_harvest->set_spec,
                 'metadata_prefix' => $this->_harvest->metadata_prefix,
-                'identifier' => (string)$identifier,
+                'identifier' => (string) $identifier,
             ),
             1,
             1
         );
-        
+
         // Ugh, gotta be a better way to do this.
         if ($record) {
             $record = $record[0];
@@ -165,13 +163,13 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * recurses through all resumption tokens until the response is completed.
      * 
      * @param string|false $resumptionToken
-     * @return string|boolean Resumption token if one exists, otherwise true
+     * @return string|bool Resumption token if one exists, otherwise true
      * if the harvest is finished.
      */
     private function _harvestRecords()
     {
 
-        // Iterate through the records and hand off the mapping to the classes 
+        // Iterate through the records and hand off the mapping to the classes
         // inheriting from this class.
         $response = $this->_harvest->listRecords();
         if ($this->_isIterable($response['records'])) {
@@ -199,7 +197,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
         } else {
             $this->_addStatusMessage(__("No records were found."));
         }
-        
+
         $resumptionToken = @$response['resumptionToken'];
         if ($resumptionToken) {
             $this->_addStatusMessage(__("Received resumption token: %s", $resumptionToken));
@@ -222,7 +220,8 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
         $harvestedRecord = $this->_harvestRecord($record);
         if (empty($harvestedRecord)
-                || (empty($harvestedRecord['itemMetadata'])
+                || (
+                    empty($harvestedRecord['itemMetadata'])
                     && empty($harvestedRecord['elementTexts'])
                     && empty($harvestedRecord['fileMetadata'])
                 )
@@ -261,7 +260,8 @@ abstract class OaipmhHarvester_Harvest_Abstract
                 $item = $this->_updateItem(
                     $existingRecord,
                     $harvestedRecord['elementTexts'],
-                    $harvestedRecord['fileMetadata']);
+                    $harvestedRecord['fileMetadata']
+                );
                 $performed = 'updated';
             }
             // Ignore the update.
@@ -294,7 +294,6 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * @param Record $record
      * @param array $harvestedRecord
      * @param string $performed Can be "inserted", "updated" or "skipped".
-     * @return void
      */
     protected function _harvestRecordSpecific($record, $harvestedRecord, $performed)
     {
@@ -308,43 +307,42 @@ abstract class OaipmhHarvester_Harvest_Abstract
      */
     public function isDeletedRecord($record)
     {
-        if (isset($record->header->attributes()->status) 
+        if (isset($record->header->attributes()->status)
             && $record->header->attributes()->status == 'deleted') {
             return true;
         }
         return false;
     }
-    
+
     /**
      * Insert a record into the database.
      * 
      * @param Item $item The item object corresponding to the record.
-     * @return void
      */
     private function _insertRecord($item)
     {
         $record = new OaipmhHarvester_Record;
-        
+
         $record->harvest_id = $this->_harvest->id;
-        $record->item_id    = $item->id;
+        $record->item_id = $item->id;
         $record->identifier = (string) $this->_record->header->identifier;
-        $record->datestamp  = (string) $this->_record->header->datestamp;
+        $record->datestamp = (string) $this->_record->header->datestamp;
         $record->save();
-        
+
         release_object($record);
     }
-    
+
     /**
      * Update a record in the database with information from this harvest.
      * 
      * @param OaipmhHarvester_Record The model object corresponding to the record.
      */
     private function _updateRecord(OaipmhHarvester_Record $record)
-    {   
-        $record->datestamp  = (string) $this->_record->header->datestamp;
+    {
+        $record->datestamp = (string) $this->_record->header->datestamp;
         $record->save();
     }
-    
+
     /**
      * Return the current, formatted date.
      * 
@@ -354,7 +352,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
     {
         return date('Y-m-d H:i:s');
     }
-    
+
     /**
      * Template method.
      * 
@@ -366,7 +364,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
     protected function _beforeHarvest()
     {
     }
-    
+
     /**
      * Template method.
      * 
@@ -378,7 +376,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
     protected function _afterHarvest()
     {
     }
-    
+
     /**
      * Insert a collection.
      * 
@@ -407,7 +405,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
                     array('text' => $this->_harvest->base_url, 'html' => false);
             }
 
-            $collection = insert_collection($metadata['metadata'],$metadata['elementTexts']);
+            $collection = insert_collection($metadata['metadata'], $metadata['elementTexts']);
 
             // Remember to set the harvest's collection ID once it has been saved.
             $this->_harvest->collection_id = $collection->id;
@@ -416,7 +414,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
         return $collection;
     }
-    
+
     /**
      * Convenience method for inserting an item and its files.
      * 
@@ -433,15 +431,15 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * @return Item The inserted item.
      */
     final protected function _insertItem(
-        $metadata = array(), 
-        $elementTexts = array(), 
+        $metadata = array(),
+        $elementTexts = array(),
         $fileMetadata = array()
     ) {
         // Insert the item.
         $item = insert_item($metadata, $elementTexts);
-        
-        // Insert the record after the item is saved. The idea here is that the 
-        // OaipmhHarvester_Records table should only contain records that have 
+
+        // Insert the record after the item is saved. The idea here is that the
+        // OaipmhHarvester_Records table should only contain records that have
         // corresponding items.
         $this->_insertRecord($item);
 
@@ -449,7 +447,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
         return $item;
     }
-    
+
     /**
      * Convenience method for inserting an item and its files.
      * 
@@ -466,15 +464,16 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * @return Item The updated item.
      */
     final protected function _updateItem(
-        $record, 
-        $elementTexts = array(), 
+        $record,
+        $elementTexts = array(),
         $fileMetadata = array()
     ) {
         // Update the item
         $item = update_item(
             $record->item_id,
             array('overwriteElementTexts' => true),
-            $elementTexts);
+            $elementTexts
+        );
 
         // With default functions, old elements may not be removed. This process
         // allows to delete all of them, for the item and each attached file.
@@ -569,8 +568,9 @@ abstract class OaipmhHarvester_Harvest_Abstract
                 $item,
                 $fileTransferType,
                 $file,
-                $fileOptions);
-            $fileObject= $fileOb;
+                $fileOptions
+            );
+            $fileObject = $fileOb;
             if (!empty($file['metadata'])) {
                 $fileObject->addElementTextsByArray($file['metadata']);
                 $fileObject->save();
@@ -589,13 +589,13 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * @param string $delimiter The string dilimiting each status message
      */
     final protected function _addStatusMessage(
-        $message, 
-        $messageCode = null, 
+        $message,
+        $messageCode = null,
         $delimiter = "\n\n"
     ) {
         $this->_harvest->addStatusMessage($message, $messageCode, $delimiter);
     }
-    
+
     /**
      * Return this instance's OaipmhHarvester_Harvest object.
      * 
@@ -605,7 +605,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
     {
         return $this->_harvest;
     }
-    
+
     /**
      * Convenience method that facilitates the building of a correctly formatted 
      * elementTexts array.
@@ -619,13 +619,13 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * @return array
      */
     protected function _buildElementTexts(
-        array $elementTexts = array(), 
-        $elementSet, 
-        $element, 
-        $text, 
+        array $elementTexts = array(),
+        $elementSet,
+        $element,
+        $text,
         $html = false
     ) {
-        $elementTexts[$elementSet][$element][] 
+        $elementTexts[$elementSet][$element][]
             = array('text' => (string) $text, 'html' => (bool) $html);
         return $elementTexts;
     }
@@ -634,7 +634,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
      * Check if a string is an Xml one.
      *
      * @param string $string
-     * @return boolean
+     * @return bool
      */
     protected function _isXml($string)
     {
@@ -642,7 +642,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
         return strpos($string, '<') !== false
             && strpos($string, '>') !== false
             // A main tag is added to allow inner ones.
-            && (boolean) simplexml_load_string('<xml>' . $string . '</xml>', 'SimpleXMLElement', LIBXML_NOERROR | LIBXML_NOWARNING);
+            && (bool) simplexml_load_string('<xml>' . $string . '</xml>', 'SimpleXMLElement', LIBXML_NOERROR | LIBXML_NOWARNING);
     }
 
     /**
@@ -664,10 +664,10 @@ abstract class OaipmhHarvester_Harvest_Abstract
     final public function harvest()
     {
         try {
-            $this->_harvest->status = 
+            $this->_harvest->status =
                 OaipmhHarvester_Harvest::STATUS_IN_PROGRESS;
             $this->_harvest->save();
-        
+
             $this->_beforeHarvest();
             // This method does most of the actual work.
             $result = $this->_harvestRecords();
@@ -676,7 +676,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
             // must be valid resumption tokens.
             if ($result === true) {
                 $this->_afterHarvest();
-                $this->_harvest->status = 
+                $this->_harvest->status =
                     OaipmhHarvester_Harvest::STATUS_COMPLETED;
                 $this->_harvest->completed = $this->_getCurrentDateTime();
                 $this->_harvest->resumption_token = null;
@@ -686,8 +686,10 @@ abstract class OaipmhHarvester_Harvest_Abstract
                 $this->_afterHarvest();
                 $this->_harvest->status = OaipmhHarvester_Harvest::STATUS_KILLED;
                 $msg = __('The harvest has been killed.');
-                $this->_addStatusMessage($msg,
-                    OaipmhHarvester_Harvest_Abstract::MESSAGE_CODE_WARNING);
+                $this->_addStatusMessage(
+                    $msg,
+                    self::MESSAGE_CODE_WARNING
+                );
                 $this->_harvest->completed = $this->_getCurrentDateTime();
                 _log('[OaipmhHarvester] ' . __('The harvest %d has been killed.', $this->_harvest->id), Zend_Log::WARN);
             }
@@ -697,9 +699,8 @@ abstract class OaipmhHarvester_Harvest_Abstract
                 $this->_harvest->status =
                     OaipmhHarvester_Harvest::STATUS_QUEUED;
             }
-        
+
             $this->_harvest->save();
-        
         } catch (Zend_Http_Client_Exception $e) {
             $this->_stopWithError($e);
         } catch (Exception $e) {
@@ -707,7 +708,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
             // For real errors need to be logged and debugged.
             _log($e, Zend_Log::ERR);
         }
-    
+
         $peakUsage = memory_get_peak_usage();
         _log("[OaipmhHarvester] Peak memory usage: $peakUsage", Zend_Log::INFO);
     }
@@ -716,8 +717,8 @@ abstract class OaipmhHarvester_Harvest_Abstract
     {
         $this->_addStatusMessage($e->getMessage(), self::MESSAGE_CODE_ERROR);
         $this->_harvest->status = OaipmhHarvester_Harvest::STATUS_ERROR;
-        // Reset the harvest start_from time if an error occurs during 
-        // processing. Since there's no way to know exactly when the 
+        // Reset the harvest start_from time if an error occurs during
+        // processing. Since there's no way to know exactly when the
         // error occured, re-harvests need to start from the beginning.
         $this->_harvest->start_from = null;
         $this->_harvest->save();
@@ -831,8 +832,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
             // Manage other cases? No, since this is update from OAI-PMH.
             if (!empty($file['Url'])) {
                 $list[] = $file['Url'];
-            }
-            elseif (!empty($file['Filesystem'])) {
+            } elseif (!empty($file['Filesystem'])) {
                 $list[] = basename($file['Filesystem']);
             }
         }
@@ -893,8 +893,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
                         $this->_updateMetadata($file, $metadataFile['metadata']);
                         break;
                     }
-                }
-                elseif (!empty($metadataFile['Filesystem'])) {
+                } elseif (!empty($metadataFile['Filesystem'])) {
                     if ($file->original_filename == basename($metadataFile['Filesystem'])) {
                         $this->_updateMetadata($file, $metadataFile['metadata']);
                         break;

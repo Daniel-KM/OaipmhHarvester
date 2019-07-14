@@ -9,26 +9,26 @@
 class OaipmhHarvester_Test_AppTestCase extends Omeka_Test_AppTestCase
 {
     const PLUGIN_NAME = 'OaipmhHarvester';
-    
+
     public function setUp()
     {
         parent::setUp();
-        
-        // Authenticate and set the current user 
+
+        // Authenticate and set the current user
         $this->user = $this->db->getTable('User')->find(1);
         $this->_authenticateUser($this->user);
-        
+
         $pluginHelper = new Omeka_Test_Helper_Plugin;
         $pluginHelper->setUp(self::PLUGIN_NAME);
         Omeka_Test_Resource_Db::$runInstaller = true;
 
         // Remove the default item.
         $items = $this->db->getTable('Item')->findAll();
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $item->delete();
         }
     }
-    
+
     public function assertPreConditions()
     {
         $harvests = $this->db->getTable('OaipmhHarvester_Harvest')->findAll();
@@ -37,11 +37,11 @@ class OaipmhHarvester_Test_AppTestCase extends Omeka_Test_AppTestCase
         $items = $this->db->getTable('Item')->findAll();
         $this->assertEquals(0, count($items), 'There should be no items.');
     }
-    
+
     protected function _deleteAllHarvests()
     {
         $harvests = $this->db->getTable('OaipmhHarvester_Harvest')->findAll();
-        foreach($harvests as $harvest) {
+        foreach ($harvests as $harvest) {
             $harvest->delete();
         }
         $harvests = $this->db->getTable('OaipmhHarvester_Harvest')->findAll();
