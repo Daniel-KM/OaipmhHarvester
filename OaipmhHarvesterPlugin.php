@@ -54,6 +54,7 @@ class OaipmhHarvesterPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_options = array(
         // With roles, in particular if Guest User is installed.
         'oaipmh_harvester_allow_roles' => 'a:1:{i:0;s:5:"super";}',
+        'oaipmhharvester_http_client_timeout' => 10,
     );
 
     public function hookInitialize()

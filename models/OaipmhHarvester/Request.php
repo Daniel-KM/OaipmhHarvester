@@ -58,14 +58,13 @@ class OaipmhHarvester_Request
             $formats[$prefix] = $schema;
         }
         /*
-         * It's important to consider that some repositories don't provide 
-         * repository
-         *  -wide metadata formats. Instead they only provide record level metadata 
-         *  formats. Oai_dc is mandatory for all records, so if a
-         *  repository doesn't provide metadata formats using ListMetadataFormats, 
-         *  only expose the oai_dc prefix. For a data provider that doesn't offer 
-         *  repository-wide metadata formats, see: 
-         *  http://www.informatik.uni-stuttgart.de/cgi-bin/OAI/OAI.pl
+         * It's important to consider that some repositories don't provide
+         * repository-wide metadata formats. Instead they only provide record
+         * level metadata formats. Oai_dc is mandatory for all records, so if a
+         * repository doesn't provide metadata formats using ListMetadataFormats,
+         * only expose the oai_dc prefix. For a data provider that doesn't offer
+         * repository-wide metadata formats, see:
+         * http://www.informatik.uni-stuttgart.de/cgi-bin/OAI/OAI.pl
          */
         if (empty($formats)) {
             $formats[OaipmhHarvester_Harvest_OaiDc::METADATA_PREFIX] =
@@ -77,7 +76,7 @@ class OaipmhHarvester_Request
     /**
      * List all records for a given request.
      *
-     * @param array $query Args may include: metadataPrefix, set, 
+     * @param array $query Args may include: metadataPrefix, set,
      * resumptionToken, from.
      */
     public function listRecords(array $query = array())
@@ -102,7 +101,7 @@ class OaipmhHarvester_Request
      * List all available sets from the provider.
      *
      * Resumption token can be given for incomplete lists.
-     * 
+     *
      * @param string|null $resumptionToken
      */
     public function listSets($resumptionToken = null)
@@ -158,6 +157,15 @@ class OaipmhHarvester_Request
     {
         if ($client === null) {
             $client = new Omeka_Http_Client();
+
+            $config = array();
+
+            $timeout = get_option('oaipmhharvester_http_client_timeout');
+            if (isset($timeout) && is_numeric($timeout) && $timeout > 0) {
+                $config['timeout'] = $timeout;
+            }
+
+            $client->setConfig($config);
         }
         $this->_client = $client;
     }
@@ -179,7 +187,6 @@ class OaipmhHarvester_Request
         $client->setConfig(
             array(
                 'useragent' => $this->_getUserAgent(),
-                'timeout'      => 20
             )
         );
         $client->setParameterGet($query);
