@@ -53,10 +53,10 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Class constructor.
-     * 
+     *
      * Prepares the harvest process.
-     * 
-     * @param OaipmhHarvester_Harvest $harvest The OaipmhHarvester_Harvest object 
+     *
+     * @param OaipmhHarvester_Harvest $harvest The OaipmhHarvester_Harvest object
      * model
      */
     public function __construct($harvest)
@@ -80,7 +80,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Abstract method that all class extentions must contain.
-     * 
+     *
      * @param SimpleXMLIterator The current record object
      */
     abstract protected function _harvestRecord($record);
@@ -158,10 +158,10 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Recursive method that loops through all requested records
-     * 
-     * This method hands off mapping to the class that extends off this one and 
+     *
+     * This method hands off mapping to the class that extends off this one and
      * recurses through all resumption tokens until the response is completed.
-     * 
+     *
      * @param string|false $resumptionToken
      * @return string|bool Resumption token if one exists, otherwise true
      * if the harvest is finished.
@@ -256,7 +256,8 @@ abstract class OaipmhHarvester_Harvest_Abstract
         $existingRecord = $this->_recordExists($record);
         if ($existingRecord) {
             // If datestamp has changed, update the record.
-            if ($existingRecord->datestamp != $record->header->datestamp) {
+            $no_update = get_option('oaipmhharvester_no_update');
+            if (!$no_update && $existingRecord->datestamp != $record->header->datestamp) {
                 $item = $this->_updateItem(
                     $existingRecord,
                     $harvestedRecord['elementTexts'],
@@ -301,7 +302,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Return whether the record is deleted
-     * 
+     *
      * @param SimpleXMLIterator The record object
      * @return bool
      */
@@ -316,7 +317,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Insert a record into the database.
-     * 
+     *
      * @param Item $item The item object corresponding to the record.
      */
     private function _insertRecord($item)
@@ -334,7 +335,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Update a record in the database with information from this harvest.
-     * 
+     *
      * @param OaipmhHarvester_Record The model object corresponding to the record.
      */
     private function _updateRecord(OaipmhHarvester_Record $record)
@@ -345,7 +346,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Return the current, formatted date.
-     * 
+     *
      * @return string
      */
     private function _getCurrentDateTime()
@@ -355,10 +356,10 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Template method.
-     * 
-     * May be overwritten by classes that extend of this one. This method runs 
+     *
+     * May be overwritten by classes that extend of this one. This method runs
      * once, prior to record iteration.
-     * 
+     *
      * @see self::__construct()
      */
     protected function _beforeHarvest()
@@ -367,10 +368,10 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Template method.
-     * 
-     * May be overwritten by classes that extend of this one. This method runs 
+     *
+     * May be overwritten by classes that extend of this one. This method runs
      * once, after record iteration.
-     * 
+     *
      * @see self::__construct()
      */
     protected function _afterHarvest()
@@ -379,7 +380,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Insert a collection.
-     * 
+     *
      * @see insert_collection()
      * @param array $metadata
      * @return Collection
@@ -417,12 +418,12 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Convenience method for inserting an item and its files.
-     * 
-     * Method used by map writers that encapsulates item and file insertion. 
-     * Items are inserted first, then files are inserted individually. This is 
-     * done so Item and File objects can be released from memory, avoiding 
+     *
+     * Method used by map writers that encapsulates item and file insertion.
+     * Items are inserted first, then files are inserted individually. This is
+     * done so Item and File objects can be released from memory, avoiding
      * memory allocation issues.
-     * 
+     *
      * @see insert_item()
      * @see insert_files_for_item()
      * @param mixed $metadata Item metadata
@@ -450,12 +451,12 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Convenience method for inserting an item and its files.
-     * 
-     * Method used by map writers that encapsulates item and file insertion. 
-     * Items are inserted first, then files are inserted individually. This is 
-     * done so Item and File objects can be released from memory, avoiding 
+     *
+     * Method used by map writers that encapsulates item and file insertion.
+     * Items are inserted first, then files are inserted individually. This is
+     * done so Item and File objects can be released from memory, avoiding
      * memory allocation issues.
-     * 
+     *
      * @see insert_item()
      * @see insert_files_for_item()
      * @param OaipmhHarvester_Record $record Contains the ID of item to update
@@ -583,7 +584,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Adds a status message to the harvest.
-     * 
+     *
      * @param string $message The error message
      * @param int|null $messageCode The message code
      * @param string $delimiter The string dilimiting each status message
@@ -598,7 +599,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Return this instance's OaipmhHarvester_Harvest object.
-     * 
+     *
      * @return OaipmhHarvester_Harvest
      */
     final protected function _getHarvest()
@@ -607,9 +608,9 @@ abstract class OaipmhHarvester_Harvest_Abstract
     }
 
     /**
-     * Convenience method that facilitates the building of a correctly formatted 
+     * Convenience method that facilitates the building of a correctly formatted
      * elementTexts array.
-     * 
+     *
      * @see insert_item()
      * @param array $elementTexts The previously build elementTexts array
      * @param string $elementSet This element's element set
@@ -647,7 +648,7 @@ abstract class OaipmhHarvester_Harvest_Abstract
 
     /**
      * Error handler callback.
-     * 
+     *
      * @see self::__construct()
      */
     public function errorHandler($errno, $errstr, $errfile, $errline)

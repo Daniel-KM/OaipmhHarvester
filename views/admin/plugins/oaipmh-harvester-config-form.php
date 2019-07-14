@@ -35,4 +35,15 @@
             <?php echo $this->formText('oaipmhharvester_http_client_timeout', get_option('oaipmhharvester_http_client_timeout')); ?>
         </div>
     </div>
+    <div class="field">
+        <div class="two columns alpha">
+            <?php echo $this->formLabel('oaipmhharvester_no_update', __('Do not update existing records')); ?>
+        </div>
+        <div class="inputs five columns omega">
+            <p class="explanation">
+                <?php echo __('Only new records will be added. Existing records will be left untouched.'); ?>
+            </p>
+            <?php echo $this->formCheckbox('oaipmhharvester_no_update', null, array('checked' => (bool) get_option('oaipmhharvester_no_update'))); ?>
+        </div>
+    </div>
 </fieldset>
