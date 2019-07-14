@@ -20,7 +20,7 @@ echo head($head);
     <?php if (empty($this->availableMaps)): ?>
     <div class="error"><?php
         echo __('There are no available data maps that are compatible with this repository.'
-            ' ' . 'You will not be able to harvest from this repository.');
+            . ' ' . 'You will not be able to harvest from this repository.');
     ?></div>
     <?php endif; ?>
     <h2><?php echo __('Data provider: %s', html_escape($this->baseUrl)); ?></h2>
