@@ -88,7 +88,65 @@ class OaipmhHarvester_Request
         );
         $error = $this->_getError($xml);
         if ($error) {
-            $response['error'] = $error;
+            // Try another way.
+            if ($query) {
+                $url = $this->_baseUrl . '?' . http_build_query($query, null, '&', PHP_QUERY_RFC3986);
+                $curl = curl_init($url);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                $output = curl_exec($curl);
+                curl_close($curl);
+                if ($output) {
+                    $xml = $output;
+                    libxml_use_internal_errors(true);
+                    $iter = simplexml_load_string($xml);
+                    if ($iter !== false) {
+                        $ns = $iter->getNamespaces();
+                        $ns_key = array_search("http://www.openarchives.org/OAI/2.0/", $ns);
+                        if ($ns_key !== false and $ns_key !== "") {
+                            $iter = simplexml_load_string(
+                                $xml,
+                                "SimpleXMLElement",
+                                0,
+                                $ns_key,
+                                true
+                            );
+                        }
+                    }
+                    if ($iter === false) {
+                        $errors = array();
+                        foreach (libxml_get_errors() as $error) {
+                            $errors[] = trim($error->message) . ' on line '
+                                . $error->line . ', column '
+                                . $error->column;
+                        }
+                        libxml_clear_errors();
+                        libxml_use_internal_errors(false);
+                        _log(
+                            "[OaipmhHarvester] Could not parse XML: "
+                            . $xml
+                        );
+                        $errStr = join("\n", $errors);
+                        _log("[OaipmhHarvester] XML errors in document: " . $errStr);
+                        throw new Zend_Http_Client_Exception(
+                            "Error in parsing response XML. XML document had the "
+                            . "following errors: \n"
+                            . $errStr
+                        );
+                    }
+                    $xml = $iter;
+                    $response = array(
+                        'records' => $xml->ListRecords->record,
+                    );
+                    $error = $this->_getError($xml);
+                    if ($error) {
+                        $response['error'] = $error;
+                    }
+                } else {
+                    $response['error'] = $error;
+                }
+            } else {
+                $response['error'] = $error;
+            }
         }
         $token = $xml->ListRecords->resumptionToken;
         if ($token) {
